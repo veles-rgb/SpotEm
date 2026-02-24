@@ -6,3 +6,56 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Level {
+  id   String @id @default(cuid())
+  name String @unique
+
+  imagePath String
+
+  targets Target[]
+
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  leaderboardEntries LeaderboardEntry[]
+
+  @@index([name])
+}
+
+model Target {
+  id        String  @id @default(cuid())
+
+  levelId   String
+  level     Level   @relation(fields: [levelId], references: [id], onDelete: Cascade)
+
+  name      String
+
+  x         Float
+  y         Float
+  widthPct  Float
+  heightPct Float
+
+  imagePath String
+
+  createdAt DateTime @default(now())
+
+  @@index([levelId])
+  @@unique([levelId, name])
+}
+
+model LeaderboardEntry {
+  id String @id @default(cuid())
+
+  levelId String
+  level   Level  @relation(fields: [levelId], references: [id], onDelete: Cascade)
+
+  // Player name typed in frontend
+  playerName String
+
+  // Duration in milliseconds
+  timeMs Int
+
+  createdAt DateTime @default(now())
+
+  @@index([levelId, timeMs])
+}
