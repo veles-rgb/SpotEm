@@ -12,13 +12,16 @@ export default function Play() {
   const [loadingLevel, setLoadingLevel] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  // User leaderboard stuff
+
+  // Leaderboard stuff
   const [leaderboard, setLeaderboard] = useState([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
   const [leaderboardError, setLeaderboardError] = useState('');
+
   const [name, setName] = useState('');
   const [isPosting, setIsPosting] = useState(false);
   const [postError, setPostError] = useState('');
+
   // Server timer stuff
   const [runId, setRunId] = useState(null);
   const [timeStartedAt, setTimeStartedAt] = useState(null);
@@ -36,7 +39,7 @@ export default function Play() {
 
     const interval = setInterval(() => {
       setNow(Date.now());
-    }, 250); // updates 4 times per second
+    }, 250);
 
     return () => clearInterval(interval);
   }, [timeStartedAt, isRunning]);
@@ -119,7 +122,6 @@ export default function Play() {
       }
 
       setPostError('');
-      setIsPosting(false);
       window.location.reload();
     } catch (err) {
       setPostError(err.message || 'Something went wrong');
@@ -132,9 +134,7 @@ export default function Play() {
     try {
       setServerTimeError('');
 
-      if (!levelId) {
-        throw new Error('Missing levelId');
-      }
+      if (!levelId) throw new Error('Missing levelId');
 
       const res = await fetch(`${apiUrl}/run/start/${levelId}`, {
         method: 'POST',
@@ -158,13 +158,7 @@ export default function Play() {
     try {
       setServerTimeError('');
 
-      if (!levelId) {
-        throw new Error('Missing levelId');
-      }
-
-      if (!runId) {
-        throw new Error('Missing runId');
-      }
+      if (!runId) throw new Error('Missing runId');
 
       const res = await fetch(`${apiUrl}/run/finish/${runId}`, {
         method: 'POST',
@@ -178,7 +172,6 @@ export default function Play() {
       }
 
       const data = await res.json();
-
       setServerTimeMs(data.timeMs);
     } catch (err) {
       setServerTimeError(err.message || 'ERROR');
@@ -229,11 +222,9 @@ export default function Play() {
 
   const formatFinalTime = (ms) => {
     if (!ms) return '0:00';
-
     const totalSeconds = Math.floor(ms / 1000);
     const mins = Math.floor(totalSeconds / 60);
     const secs = totalSeconds % 60;
-
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
@@ -243,7 +234,9 @@ export default function Play() {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          height: '100vh',
+          flex: 1,
+          minHeight: 0,
+          overflow: 'hidden',
           justifyContent: 'center',
           alignItems: 'center',
         }}
@@ -258,54 +251,53 @@ export default function Play() {
         >
           PLAY
         </button>
+
         {loadingLeaderboard ? (
           <LoadingOverlay message="Fetching leaderboard..." fullscreen />
         ) : (
-          <div>
+          <div style={{ marginTop: '20px', width: 'min(520px, 90vw)' }}>
             <h2 style={{ textAlign: 'center' }}>
               {level?.name ?? 'Level'} Leaderboard
             </h2>
+
             {leaderboardError && <p>{leaderboardError}</p>}
+
             <div
               style={{
                 display: 'grid',
                 gridTemplateColumns: '60px 1fr 80px',
                 alignItems: 'center',
+                marginTop: '10px',
+                fontWeight: 600,
               }}
             >
               <div style={{ textAlign: 'left' }}>Rank</div>
               <div style={{ textAlign: 'center' }}>Name</div>
               <div style={{ textAlign: 'right' }}>Time</div>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              {leaderboard.map((l, index) => {
-                return (
-                  <div
-                    key={l.id}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '60px 1fr 80px',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <div style={{ textAlign: 'left' }}>{index + 1}</div>
-                    <div style={{ textAlign: 'center' }}>{l.playerName}</div>
-                    <div style={{ textAlign: 'right' }}>
-                      {(() => {
-                        const totalSeconds = Math.floor(l.timeMs / 1000);
-                        const mins = Math.floor(totalSeconds / 60);
-                        const secs = totalSeconds % 60;
-                        return `${mins}:${secs.toString().padStart(2, '0')}`;
-                      })()}
-                    </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {leaderboard.map((l, index) => (
+                <div
+                  key={l.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '60px 1fr 80px',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div style={{ textAlign: 'left' }}>{index + 1}</div>
+                  <div style={{ textAlign: 'center' }}>{l.playerName}</div>
+                  <div style={{ textAlign: 'right' }}>
+                    {(() => {
+                      const totalSeconds = Math.floor(l.timeMs / 1000);
+                      const mins = Math.floor(totalSeconds / 60);
+                      const secs = totalSeconds % 60;
+                      return `${mins}:${secs.toString().padStart(2, '0')}`;
+                    })()}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -314,28 +306,22 @@ export default function Play() {
   }
 
   return (
-    <main
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        position: 'relative',
-      }}
-    >
+    <main className="page-main page-play" style={{ position: 'relative' }}>
       {loadingLevel && (
         <LoadingOverlay message="Fetching level..." fullscreen />
       )}
 
+      {/* Timer (top) */}
       {serverTimeError ? (
         <div>{serverTimeError}</div>
       ) : (
-        <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px' }}>
-          {formatFinalTime(elapsedMs)}
+        <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '8px' }}>
+          {formatFinalTime(serverTimeMs ?? elapsedMs)}
         </div>
       )}
 
       {errors.length > 0 && (
-        <ul style={{ color: 'red' }}>
+        <ul style={{ color: 'red', marginBottom: '8px' }}>
           {errors.map((error, i) => (
             <li key={i}>{error}</li>
           ))}
@@ -346,78 +332,85 @@ export default function Play() {
         <div
           style={{
             position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            padding: '40px',
+            inset: 0,
+            display: 'grid',
+            placeItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.25)',
             zIndex: 1000,
-            border: '5px solid green',
-            textAlign: 'center',
-            boxShadow: '0 0 20px rgba(0,0,0,0.5)',
           }}
         >
-          <h1>LEVEL COMPLETE!</h1>
-          <p style={{ fontSize: '1.5rem' }}>
-            Time: {formatFinalTime(serverTimeMs)}
-          </p>
-          <form onSubmit={handleSubmit}>
-            <label>
-              Name
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                minLength={3}
-                maxLength={25}
-                required
-              />
-            </label>
-            <button type="submit" disabled={isPosting}>
-              {isPosting ? 'Submitting...' : 'Submit'}
-            </button>
-            {postError && <p>{postError}</p>}
-          </form>
-          <button
-            onClick={() => window.location.reload()}
-            style={{ padding: '10px 20px', cursor: 'pointer' }}
+          <div
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              padding: '32px',
+              border: '4px solid green',
+              textAlign: 'center',
+              width: 'min(520px, 92vw)',
+            }}
           >
-            Play Again
-          </button>
+            <h1>LEVEL COMPLETE!</h1>
+            <p style={{ fontSize: '1.5rem' }}>
+              Time: {formatFinalTime(serverTimeMs)}
+            </p>
+
+            <form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
+              <label>
+                Name{' '}
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  minLength={3}
+                  maxLength={25}
+                  required
+                />
+              </label>
+
+              <div style={{ marginTop: 10 }}>
+                <button type="submit" disabled={isPosting}>
+                  {isPosting ? 'Submitting...' : 'Submit'}
+                </button>
+              </div>
+
+              {postError && <p style={{ color: 'red' }}>{postError}</p>}
+            </form>
+
+            <button
+              onClick={() => window.location.reload()}
+              style={{ padding: '10px 20px', cursor: 'pointer', marginTop: 12 }}
+            >
+              Play Again
+            </button>
+          </div>
         </div>
       )}
 
-      {/* IMAGE + TARGETS SIDE PANEL */}
+      {/* Image + targets dropdown */}
       <div
         style={{
           display: 'flex',
-          justifyContent: 'center',
+          gap: '16px',
           alignItems: 'flex-start',
-          gap: '20px',
+          justifyContent: 'center',
           width: '100%',
-          marginTop: '20px',
+          flex: 1,
+          minHeight: 0,
         }}
       >
-        {/* CENTER IMAGE */}
-        <div
-          style={{
-            display: 'inline-block',
-            position: 'relative',
-            cursor: 'crosshair',
-          }}
-        >
+        {/* Image container */}
+        <div style={{ position: 'relative', cursor: 'crosshair' }}>
           <img
             onClick={onImageClick}
             src={level?.imagePath}
             alt="Game Map"
+            draggable="false"
             style={{
               display: 'block',
-              maxHeight: '80vh',
-              maxWidth: '80vw',
+              maxHeight: '70vh',
+              maxWidth: '72vw',
               objectFit: 'contain',
               userSelect: 'none',
             }}
-            draggable="false"
           />
 
           {/* Successful Marks */}
@@ -445,7 +438,7 @@ export default function Play() {
             </div>
           ))}
 
-          {/* Interaction UI */}
+          {/* Interaction UI / dropdown */}
           {target && !isGameOver && (
             <>
               <div
@@ -485,6 +478,7 @@ export default function Play() {
                       style={{ padding: '5px 15px', cursor: 'pointer' }}
                       src={obj.imagePath}
                       alt={obj.name}
+                      draggable="false"
                     />
                   ))}
               </div>
@@ -492,8 +486,15 @@ export default function Play() {
           )}
         </div>
 
-        {/* RIGHT SIDE TARGET PREVIEWS */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {/* target previews */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            width: '90px',
+          }}
+        >
           {targets.map((t) => {
             const isFound = foundSpots.some((s) => s.name === t.name);
             return (
@@ -501,13 +502,13 @@ export default function Play() {
                 key={t.name}
                 src={t.imagePath}
                 alt={t.name}
+                draggable="false"
                 style={{
                   width: '80px',
                   height: '80px',
                   objectFit: 'contain',
                   opacity: isFound ? 0.4 : 1,
                 }}
-                draggable="false"
               />
             );
           })}
