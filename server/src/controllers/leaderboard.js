@@ -2,16 +2,16 @@ import { prisma } from "../../lib/prisma.js";
 
 export async function postLeaderboard(req, res, next) {
     const { levelId } = req.params;
-    const { name, finalTime } = req.body;
+    const { name, serverTimeMs } = req.body;
 
-    if (!levelId || !name?.trim() || finalTime == null) return res.status(400).json({ message: "LevelId, name & finalTime are required" });
+    if (!levelId || !name?.trim() || serverTimeMs == null) return res.status(400).json({ message: "LevelId, name & finalTime are required" });
 
     try {
         const score = await prisma.leaderboardEntry.create({
             data: {
                 levelId,
                 playerName: name,
-                timeMs: finalTime * 1000,
+                timeMs: serverTimeMs,
             }
         });
 
