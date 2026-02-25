@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Timer from '../components/Timer';
 import LoadingOverlay from '../components/LoadingOverlay';
 
 export default function Play() {
@@ -13,17 +12,34 @@ export default function Play() {
   const [loadingLevel, setLoadingLevel] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
-  const [finalTime, setFinalTime] = useState(null);
   // User leaderboard stuff
   const [leaderboard, setLeaderboard] = useState([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
   const [leaderboardError, setLeaderboardError] = useState('');
-
   const [name, setName] = useState('');
   const [isPosting, setIsPosting] = useState(false);
   const [postError, setPostError] = useState('');
+  // Server timer stuff
+  const [runId, setRunId] = useState(null);
+  const [timeStartedAt, setTimeStartedAt] = useState(null);
+  const [serverTimeMs, setServerTimeMs] = useState(null);
+  const [serverTimeError, setServerTimeError] = useState('');
+  const [now, setNow] = useState(Date.now());
+
+  const elapsedMs = timeStartedAt ? Math.max(0, now - timeStartedAt) : 0;
+  const isRunning = gameStarted && !isGameOver;
 
   const apiUrl = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    if (!timeStartedAt || !isRunning) return;
+
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 250); // updates 4 times per second
+
+    return () => clearInterval(interval);
+  }, [timeStartedAt, isRunning]);
 
   useEffect(() => {
     async function fetchLevel() {
@@ -93,15 +109,13 @@ export default function Play() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
-          finalTime,
+          serverTimeMs,
         }),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(
-          data?.message || `Failed to load level (${res.status})`,
-        );
+        throw new Error(data?.message || `Failed to post (${res.status})`);
       }
 
       setPostError('');
@@ -114,8 +128,66 @@ export default function Play() {
     }
   }
 
+  async function handleTimeStart() {
+    try {
+      setServerTimeError('');
+
+      if (!levelId) {
+        throw new Error('Missing levelId');
+      }
+
+      const res = await fetch(`${apiUrl}/run/start/${levelId}`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || `Failed to start timer ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      setTimeStartedAt(Number(data.startedAt));
+      setRunId(data.runId);
+    } catch (err) {
+      setServerTimeError(err.message || 'ERROR');
+    }
+  }
+
+  async function handleTimeStop() {
+    try {
+      setServerTimeError('');
+
+      if (!levelId) {
+        throw new Error('Missing levelId');
+      }
+
+      if (!runId) {
+        throw new Error('Missing runId');
+      }
+
+      const res = await fetch(`${apiUrl}/run/finish/${runId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ levelId }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || `Failed to stop timer ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      setServerTimeMs(data.timeMs);
+    } catch (err) {
+      setServerTimeError(err.message || 'ERROR');
+    }
+  }
+
   function startGame() {
     setGameStarted(true);
+    handleTimeStart();
   }
 
   function checkIfCorrect(clickTarget, obj) {
@@ -148,16 +220,20 @@ export default function Play() {
 
       if (newFound.length === targets.length) {
         setIsGameOver(true);
+        handleTimeStop();
       }
     } else {
       setTarget(null);
     }
   }
 
-  const formatFinalTime = (s) => {
-    if (!s) return '0:00';
-    const mins = Math.floor(s / 60);
-    const secs = s % 60;
+  const formatFinalTime = (ms) => {
+    if (!ms) return '0:00';
+
+    const totalSeconds = Math.floor(ms / 1000);
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
@@ -210,6 +286,7 @@ export default function Play() {
               {leaderboard.map((l, index) => {
                 return (
                   <div
+                    key={l.id}
                     style={{
                       display: 'grid',
                       gridTemplateColumns: '60px 1fr 80px',
@@ -249,7 +326,13 @@ export default function Play() {
         <LoadingOverlay message="Fetching level..." fullscreen />
       )}
 
-      <Timer isActive={gameStarted && !isGameOver} setTime={setFinalTime} />
+      {serverTimeError ? (
+        <div>{serverTimeError}</div>
+      ) : (
+        <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px' }}>
+          {formatFinalTime(elapsedMs)}
+        </div>
+      )}
 
       {errors.length > 0 && (
         <ul style={{ color: 'red' }}>
@@ -276,7 +359,7 @@ export default function Play() {
         >
           <h1>LEVEL COMPLETE!</h1>
           <p style={{ fontSize: '1.5rem' }}>
-            Time: {formatFinalTime(finalTime)}
+            Time: {formatFinalTime(serverTimeMs)}
           </p>
           <form onSubmit={handleSubmit}>
             <label>
