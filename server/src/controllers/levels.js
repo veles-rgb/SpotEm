@@ -13,6 +13,16 @@ export async function getLevel(req, res, next) {
 
         res.json(level);
     } catch (err) {
-        next(err);
+        return next(err);
+    }
+}
+
+export async function getAllLevels(req, res, next) {
+    try {
+        const levels = await prisma.level.findMany();
+
+        return res.status(200).json({ levels });
+    } catch (err) {
+        return next(err);
     }
 }
