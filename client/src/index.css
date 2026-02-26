@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+.bungee-regular {
+    font-family: "Bungee", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
 *,
 *::before,
 *::after {
@@ -14,10 +21,26 @@ body {
 }
 
 body {
-    background-color: #f8f9fa;
+    background:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.06), transparent 40%),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.04), transparent 40%),
+        linear-gradient(135deg, #121212, #1e1e1e);
+
+    background-attachment: fixed;
+    color: white;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.05;
 }
 
 #root {
@@ -51,6 +74,7 @@ main.page-play {
     justify-content: flex-start;
 }
 
+
 .spinner {
     width: 22px;
     height: 22px;
@@ -63,5 +87,110 @@ main.page-play {
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+.glass-effect {
+    position: relative;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-effect::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+
+    background: linear-gradient(145deg,
+            rgba(255, 255, 255, 0.6),
+            rgba(255, 255, 255, 0.2) 35%,
+            rgba(255, 255, 255, 0.05) 60%,
+            rgba(255, 255, 255, 0.02));
+
+    opacity: 0.25;
+
+    pointer-events: none;
+}
+
+/* EMBER OVERLAY */
+
+.ember-overlay {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.ember-overlay>* {
+    position: relative;
+    z-index: 2;
+}
+
+.ember-overlay::before,
+.ember-overlay::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    z-index: 1;
+    pointer-events: none;
+
+    opacity: 0.55;
+    filter: blur(0.2px);
+    mix-blend-mode: screen;
+}
+
+.ember-overlay::before {
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.22) 0 2px, transparent 3px),
+        radial-gradient(circle, rgba(255, 170, 120, 0.16) 0 2px, transparent 3px),
+        radial-gradient(circle, rgba(180, 220, 255, 0.14) 0 2px, transparent 3px);
+    background-size: 260px 260px, 340px 340px, 420px 420px;
+    background-position: 0 0, 80px 140px, 160px 40px;
+
+    animation: emberDriftA 18s linear infinite;
+}
+
+.ember-overlay::after {
+    opacity: 0.38;
+    filter: blur(0.35px);
+
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.18) 0 1px, transparent 2px),
+        radial-gradient(circle, rgba(255, 120, 90, 0.10) 0 1px, transparent 2px),
+        radial-gradient(circle, rgba(160, 210, 255, 0.10) 0 1px, transparent 2px);
+    background-size: 140px 140px, 180px 180px, 220px 220px;
+    background-position: 0 0, 60px 90px, 120px 30px;
+
+    animation: emberDriftB 12s linear infinite;
+}
+
+@keyframes emberDriftA {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(12%, 18%, 0);
+    }
+}
+
+@keyframes emberDriftB {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(-10%, 14%, 0);
     }
 }
