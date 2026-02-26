@@ -242,9 +242,10 @@ export default function Play() {
         }}
       >
         <button
+          className="glass-effect"
           onClick={startGame}
           style={{
-            padding: '20px 40px',
+            padding: '10px 20px',
             fontSize: '1.5rem',
             cursor: 'pointer',
           }}
@@ -255,8 +256,22 @@ export default function Play() {
         {loadingLeaderboard ? (
           <LoadingOverlay message="Fetching leaderboard..." fullscreen />
         ) : (
-          <div style={{ marginTop: '20px', width: 'min(520px, 90vw)' }}>
-            <h2 style={{ textAlign: 'center' }}>
+          <div
+            className="glass-effect"
+            style={{
+              marginTop: '20px',
+              width: 'min(520px, 90vw)',
+              padding: '2rem',
+            }}
+          >
+            <h2
+              className="glass-effect"
+              style={{
+                textAlign: 'center',
+                fontWeight: '900',
+                padding: '1rem',
+              }}
+            >
               {level?.name ?? 'Level'} Leaderboard
             </h2>
 
@@ -269,11 +284,13 @@ export default function Play() {
                 alignItems: 'center',
                 marginTop: '10px',
                 fontWeight: 600,
+                borderBottom: '1px solid white',
+                marginBottom: '1rem',
               }}
             >
-              <div style={{ textAlign: 'left' }}>Rank</div>
-              <div style={{ textAlign: 'center' }}>Name</div>
-              <div style={{ textAlign: 'right' }}>Time</div>
+              <div style={{ textAlign: 'left', fontWeight: '900' }}>Rank</div>
+              <div style={{ textAlign: 'center', fontWeight: '900' }}>Name</div>
+              <div style={{ textAlign: 'right', fontWeight: '900' }}>Time</div>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -315,7 +332,15 @@ export default function Play() {
       {serverTimeError ? (
         <div>{serverTimeError}</div>
       ) : (
-        <div style={{ fontSize: '2rem', fontWeight: 'bold', margin: '8px' }}>
+        <div
+          className="glass-effect"
+          style={{
+            fontSize: '2rem',
+            fontWeight: 'bold',
+            margin: '8px',
+            padding: '0.5rem 1rem',
+          }}
+        >
           {formatFinalTime(serverTimeMs ?? elapsedMs)}
         </div>
       )}
@@ -330,33 +355,61 @@ export default function Play() {
 
       {isGameOver && (
         <div
+          className="ember-overlay"
           style={{
             position: 'fixed',
             inset: 0,
             display: 'grid',
             placeItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.25)',
+            backgroundColor: 'rgba(0,0,0,0.8)',
             zIndex: 1000,
           }}
         >
           <div
+            className="glass-effect"
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
               padding: '32px',
-              border: '4px solid green',
               textAlign: 'center',
               width: 'min(520px, 92vw)',
+              position: 'relative',
+              zIndex: 1,
             }}
           >
-            <h1>LEVEL COMPLETE!</h1>
-            <p style={{ fontSize: '1.5rem' }}>
+            <h1 style={{ paddingBottom: '1rem', fontWeight: '900' }}>
+              LEVEL COMPLETE!
+            </h1>
+            <p className="glass-effect" style={{ fontSize: '1.5rem' }}>
               Time: {formatFinalTime(serverTimeMs)}
             </p>
 
-            <form onSubmit={handleSubmit} style={{ marginTop: 12 }}>
-              <label>
-                Name{' '}
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr auto 1fr',
+                alignItems: 'center',
+                width: '100%',
+                maxWidth: '600px',
+                marginTop: 12,
+              }}
+            >
+              {/* Left side (label aligned right) */}
+              <div style={{ justifySelf: 'end', paddingRight: '1rem' }}>
+                <label>Name</label>
+              </div>
+
+              {/* Center (input perfectly centered) */}
+              <div style={{ justifySelf: 'center' }}>
                 <input
+                  style={{
+                    width: '12rem',
+                    border: '1px solid white',
+                    padding: '0.3rem 0.5rem',
+                    borderRadius: '4px',
+                    background: 'transparent',
+                    color: 'white',
+                    textAlign: 'center',
+                  }}
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -364,18 +417,40 @@ export default function Play() {
                   maxLength={25}
                   required
                 />
-              </label>
+              </div>
 
-              <div style={{ marginTop: 10 }}>
-                <button type="submit" disabled={isPosting}>
+              {/* Right side (button aligned left) */}
+              <div style={{ justifySelf: 'start', paddingLeft: '1rem' }}>
+                <button
+                  className="glass-effect"
+                  style={{
+                    padding: '0.3rem 0.8rem',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                  }}
+                  type="submit"
+                  disabled={isPosting}
+                >
                   {isPosting ? 'Submitting...' : 'Submit'}
                 </button>
               </div>
 
-              {postError && <p style={{ color: 'red' }}>{postError}</p>}
+              {postError && (
+                <div
+                  style={{
+                    gridColumn: '1 / -1',
+                    textAlign: 'center',
+                    color: 'red',
+                    marginTop: 6,
+                  }}
+                >
+                  {postError}
+                </div>
+              )}
             </form>
 
             <button
+              className="glass-effect"
               onClick={() => window.location.reload()}
               style={{ padding: '10px 20px', cursor: 'pointer', marginTop: 12 }}
             >
@@ -397,104 +472,144 @@ export default function Play() {
           minHeight: 0,
         }}
       >
-        {/* Image container */}
-        <div style={{ position: 'relative', cursor: 'crosshair' }}>
-          <img
-            onClick={onImageClick}
-            src={level?.imagePath}
-            alt="Game Map"
-            draggable="false"
+        {/* Glass frame (visual only) */}
+        <div
+          className="glass-effect"
+          style={{
+            padding: '14px',
+            borderRadius: '24px',
+            display: 'inline-block',
+          }}
+        >
+          {/* Coordinate container*/}
+          <div
             style={{
-              display: 'block',
-              maxHeight: '70vh',
-              maxWidth: '72vw',
-              objectFit: 'contain',
-              userSelect: 'none',
+              position: 'relative',
+              cursor: 'crosshair',
+              borderRadius: '16px',
             }}
-          />
-
-          {/* Successful Marks */}
-          {foundSpots.map((spot, index) => (
-            <div
-              key={index}
+          >
+            <img
+              onClick={onImageClick}
+              src={level?.imagePath}
+              alt="Game Map"
+              draggable="false"
               style={{
-                width: '50px',
-                height: '50px',
-                position: 'absolute',
-                left: `${spot.x}%`,
-                top: `${spot.y}%`,
-                transform: 'translate(-50%, -50%)',
-                fontSize: '3rem',
-                fontWeight: 'bold',
-                color: '#00ff00',
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                border: '2px solid #00ff00',
-                pointerEvents: 'none',
-                textAlign: 'center',
-                lineHeight: '50px',
+                display: 'block',
+                maxHeight: '70vh',
+                maxWidth: '72vw',
+                objectFit: 'contain',
+                userSelect: 'none',
               }}
-            >
-              ✓
-            </div>
-          ))}
+            />
 
-          {/* Interaction UI / dropdown */}
-          {target && !isGameOver && (
-            <>
+            {/* Successful Marks */}
+            {foundSpots.map((spot, index) => (
               <div
+                key={index}
                 style={{
-                  position: 'absolute',
-                  left: `${target.x}%`,
-                  top: `${target.y}%`,
                   width: '50px',
                   height: '50px',
-                  border: '3px solid red',
-                  backgroundColor: 'rgba(255, 0, 0, 0.25)',
-                  transform: 'translate(-50%, -50%)',
-                  pointerEvents: 'none',
-                }}
-              />
-
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
                   position: 'absolute',
-                  left: `${target.x + 2}%`,
-                  top: `${target.y}%`,
-                  backgroundColor: 'white',
-                  border: '1px solid grey',
-                  zIndex: 10,
+                  left: `${spot.x}%`,
+                  top: `${spot.y}%`,
+                  transform: 'translate(-50%, -50%)',
+                  fontSize: '3rem',
+                  fontWeight: 'bold',
+                  color: '#00ff00',
+                  backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                  border: '2px solid #00ff00',
+                  pointerEvents: 'none',
+                  textAlign: 'center',
+                  lineHeight: '50px',
                 }}
               >
-                {targets
-                  .filter(
-                    (obj) => !foundSpots.some((spot) => spot.name === obj.name),
-                  )
-                  .map((obj) => (
-                    <img
-                      key={obj.name}
-                      onClick={() => onButtonClick(obj)}
-                      style={{ padding: '5px 15px', cursor: 'pointer' }}
-                      src={obj.imagePath}
-                      alt={obj.name}
-                      draggable="false"
-                    />
-                  ))}
+                ✓
               </div>
-            </>
-          )}
+            ))}
+
+            {/* Interaction UI / dropdown */}
+            {target && !isGameOver && (
+              <>
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: `${target.x}%`,
+                    top: `${target.y}%`,
+                    width: '50px',
+                    height: '50px',
+                    border: '3px solid red',
+                    backgroundColor: 'rgba(255, 0, 0, 0.25)',
+                    transform: 'translate(-50%, -50%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                    width: '90px',
+                    padding: '0.5rem',
+                    position: 'absolute',
+                    left: `${target.x + 2}%`,
+                    top: `${target.y}%`,
+                    backgroundColor: 'grey',
+                    border: '1px solid grey',
+                    zIndex: 10,
+                  }}
+                >
+                  <p
+                    style={{ textAlign: 'center', fontWeight: 'bolder' }}
+                    className="glass-effect"
+                  >
+                    Targets
+                  </p>
+                  {targets
+                    .filter(
+                      (obj) =>
+                        !foundSpots.some((spot) => spot.name === obj.name),
+                    )
+                    .map((obj) => (
+                      <img
+                        className="glass-effect"
+                        key={obj.name}
+                        onClick={() => onButtonClick(obj)}
+                        style={{
+                          cursor: 'pointer',
+                          width: '80px',
+                          height: '80px',
+                          border: '1px solid white',
+                        }}
+                        src={obj.imagePath}
+                        alt={obj.name}
+                        draggable="false"
+                      />
+                    ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* target previews */}
         <div
+          className="glass-effect"
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '10px',
             width: '90px',
+            padding: '0.5rem',
           }}
         >
+          <p
+            style={{ textAlign: 'center', fontWeight: 'bolder' }}
+            className="glass-effect"
+          >
+            Targets
+          </p>
           {targets.map((t) => {
             const isFound = foundSpots.some((s) => s.name === t.name);
             return (
@@ -506,8 +621,8 @@ export default function Play() {
                 style={{
                   width: '80px',
                   height: '80px',
-                  objectFit: 'contain',
                   opacity: isFound ? 0.4 : 1,
+                  border: '1px solid white',
                 }}
               />
             );
