@@ -57,7 +57,7 @@ export default function Home() {
         <div className="mt-8 grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))] justify-items-center">
           {levels.map((level) => (
             <a key={level.id} href={`/play/${level.id}`} className="block">
-              <div className="rounded-lg border bg-white p-4 hover:shadow-sm transition">
+              <div className="border bg-white p-4 hover:shadow-sm transition glass-effect">
                 <div className="flex flex-col items-center">
                   <img
                     src={level.imagePath}
@@ -65,7 +65,10 @@ export default function Home() {
                     draggable="false"
                     className="w-100 max-w-xs object-contain select-none"
                   />
-                  <h3 className="mt-3 text-center text-lg font-medium">
+                  <h3
+                    style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
+                    className="mt-3 text-center text-lg font-medium glass-effect"
+                  >
                     {level.name}
                   </h3>
                 </div>
