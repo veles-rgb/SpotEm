@@ -29,6 +29,7 @@ export default function Header() {
           <ul className="flex" style={{ gap: '1rem' }}>
             <li className="glass-effect rounded-xl">
               <Link
+                draggable="false"
                 to="/"
                 className="flex items-center justify-center px-4 py-2"
               >
@@ -36,19 +37,25 @@ export default function Header() {
               </Link>
             </li>
             <li className="glass-effect rounded-xl">
-              <Link className="flex items-center justify-center px-4 py-2">
+              <Link
+                to="/leaderboards"
+                draggable="false"
+                className="flex items-center justify-center px-4 py-2"
+              >
                 Leaderboards
               </Link>
             </li>
             <li className="glass-effect rounded-xl">
-              <Link className="flex items-center justify-center px-4 py-2">
+              <Link
+                draggable="false"
+                className="flex items-center justify-center px-4 py-2"
+              >
                 About
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Right: empty spacer to balance columns */}
         <div />
       </nav>
     </header>
