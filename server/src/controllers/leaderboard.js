@@ -1,5 +1,25 @@
 import { prisma } from "../../lib/prisma.js";
 
+export async function getAllLeaderboards(req, res, next) {
+    try {
+        const leaderboards = await prisma.level.findMany({
+            include: {
+                leaderboardEntries: {
+                    orderBy: [
+                        { timeMs: "asc" },
+                        { createdAt: "asc" },
+                    ],
+                    take: 10
+                }
+            }
+        });
+
+        return res.status(200).json({ leaderboards });
+    } catch (err) {
+        return next(err);
+    }
+}
+
 export async function postLeaderboard(req, res, next) {
     const { levelId } = req.params;
     const { name, serverTimeMs } = req.body;
