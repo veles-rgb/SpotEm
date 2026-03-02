@@ -4,7 +4,7 @@ import routes from "./routes/index.js";
 import cors from "cors";
 
 const app = express();
-const port = process.env.SERVER_PORT || 3001;
+const port = process.env.PORT || process.env.SERVER_PORT || 3001;
 
 const allowed = [
     /^https:\/\/spotem\.up\.railway\.app$/,
