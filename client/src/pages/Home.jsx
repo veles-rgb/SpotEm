@@ -56,22 +56,24 @@ export default function Home() {
 
         <div className="mt-8 grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))] justify-items-center">
           {levels.map((level) => (
-            <a key={level.id} href={`/play/${level.id}`} className="block">
-              <div className="border bg-white p-4 hover:shadow-sm transition glass-effect">
-                <div className="flex flex-col items-center">
+            <a
+              key={level.id}
+              href={`/play/${level.id}`}
+              className="block w-full max-w-xs"
+            >
+              <div className="glass-effect border bg-white p-4 transition hover:shadow-sm h-full flex flex-col">
+                <div className="w-full h-44 overflow-hidden rounded-md flex items-center justify-center">
                   <img
                     src={level.imagePath}
                     alt={level.name}
                     draggable="false"
-                    className="w-100 max-w-xs object-contain select-none"
+                    className="w-full h-full object-cover select-none"
                   />
-                  <h3
-                    style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
-                    className="mt-3 text-center text-lg font-medium glass-effect"
-                  >
-                    {level.name}
-                  </h3>
                 </div>
+
+                <h3 className="mt-4 text-center text-lg font-medium glass-effect py-2">
+                  {level.name}
+                </h3>
               </div>
             </a>
           ))}
