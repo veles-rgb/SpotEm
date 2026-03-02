@@ -26,6 +26,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/health", (req, res) => res.status(200).json({ ok: true }));
 app.use("/api", routes);
 
 app.listen(port, () => {
