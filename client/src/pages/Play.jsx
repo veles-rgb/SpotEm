@@ -203,6 +203,7 @@ export default function Play() {
     const yPct = ((e.clientY - rect.top) / rect.height) * 100;
 
     setTarget({ x: xPct, y: yPct });
+    console.log(xPct, yPct);
   }
 
   function onButtonClick(obj) {
@@ -393,12 +394,12 @@ export default function Play() {
                 marginTop: 12,
               }}
             >
-              {/* Left side (label aligned right) */}
+              {/* Left side */}
               <div style={{ justifySelf: 'end', paddingRight: '1rem' }}>
                 <label>Name</label>
               </div>
 
-              {/* Center (input perfectly centered) */}
+              {/* Center */}
               <div style={{ justifySelf: 'center' }}>
                 <input
                   style={{
@@ -419,7 +420,7 @@ export default function Play() {
                 />
               </div>
 
-              {/* Right side (button aligned left) */}
+              {/* Right side */}
               <div style={{ justifySelf: 'start', paddingLeft: '1rem' }}>
                 <button
                   className="glass-effect"
@@ -472,12 +473,11 @@ export default function Play() {
           minHeight: 0,
         }}
       >
-        {/* Glass frame (visual only) */}
+        {/* Glass frame */}
         <div
           className="glass-effect"
           style={{
             padding: '14px',
-            borderRadius: '24px',
             display: 'inline-block',
           }}
         >
@@ -546,23 +546,28 @@ export default function Play() {
                 />
 
                 <div
+                  className="glass-effect"
                   style={{
+                    pointerEvents: 'auto',
                     display: 'flex',
-                    flexDirection: 'column',
+                    flexDirection: 'row',
                     gap: '10px',
-                    width: '90px',
                     padding: '0.5rem',
                     position: 'absolute',
-                    left: `${target.x + 2}%`,
-                    top: `${target.y}%`,
+                    left: `${target.x - 20}%`,
+                    top: `${target.y - 20}%`,
                     backgroundColor: 'grey',
                     border: '1px solid grey',
                     zIndex: 10,
                   }}
                 >
                   <p
-                    style={{ textAlign: 'center', fontWeight: 'bolder' }}
-                    className="glass-effect"
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: '900',
+                      color: 'red',
+                      textDecoration: 'underline',
+                    }}
                   >
                     Targets
                   </p>
