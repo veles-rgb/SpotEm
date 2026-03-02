@@ -22,6 +22,42 @@ export default function About() {
             The Odin Project.
           </a>
         </p>
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ textAlign: 'center', fontWeight: 900 }}>Credits</h3>
+          <p style={{ textAlign: 'center' }}>
+            Level 1 - Netflix Characters by{' '}
+            <a
+              style={{ textDecoration: 'underline' }}
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://relevantmagazine.com/culture/heres-wheres-waldo-style-game-featuring-nothing-netflix-characters/"
+            >
+              relevantmagazine
+            </a>
+          </p>
+          <p style={{ textAlign: 'center' }}>
+            Level 2 - Shakespeare in the Park by{' '}
+            <a
+              style={{ textDecoration: 'underline' }}
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://www.reddit.com/user/RegoneStudios/"
+            >
+              David Regone
+            </a>
+          </p>
+          <p style={{ textAlign: 'center' }}>
+            Level 3 - Brian Multiplied by{' '}
+            <a
+              style={{ textDecoration: 'underline' }}
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://www.reddit.com/user/_emiru/"
+            >
+              _emiru
+            </a>
+          </p>
+        </div>
         <p style={{ textAlign: 'center' }}>
           Created by{' '}
           <a
