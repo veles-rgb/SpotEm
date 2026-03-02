@@ -6,7 +6,22 @@ import cors from "cors";
 const app = express();
 const port = process.env.SERVER_PORT || 3001;
 
-app.use(cors());
+const allowed = [
+    /^https:\/\/spotem\.up\.railway\.app$/,
+    /^http:\/\/localhost:5173$/,
+];
+
+app.use(
+    cors({
+        origin: (origin, cb) => {
+            if (!origin) return cb(null, true);
+            const ok = allowed.some((rule) =>
+                rule instanceof RegExp ? rule.test(origin) : rule === origin
+            );
+            cb(ok ? null : new Error("Not allowed by CORS"), ok);
+        },
+    })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
