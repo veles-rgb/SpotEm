@@ -25,6 +25,7 @@ export default function LoadingOverlay({
           gap: 12,
           minWidth: 200,
           justifyContent: 'center',
+          color: 'black',
         }}
       >
         <div className="spinner" />
