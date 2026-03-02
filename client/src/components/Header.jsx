@@ -47,6 +47,7 @@ export default function Header() {
             </li>
             <li className="glass-effect rounded-xl">
               <Link
+                to="/about"
                 draggable="false"
                 className="flex items-center justify-center px-4 py-2"
               >
